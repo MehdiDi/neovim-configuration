@@ -35,7 +35,7 @@ M.general = {
     --   end,
     --   "Scroll up multiple lines",
     -- },
-    ["<C-b>"] = {
+    ["<C-b>b"] = {
       function()
         if #closed_buffers_stack > 0 then
           local last_buffer = table.remove(closed_buffers_stack)
@@ -92,6 +92,15 @@ M.cmp = {
     ["<C-Space>"] = {
       function()
         require("cmp").complete()
+      end,
+    },
+  },
+}
+M.tagbar = {
+  n = {
+    ["<leader>tg"] = {
+      function()
+        require("telescope.builtin").lsp_document_symbols { symbols = { "function", "method", "class" } }
       end,
     },
   },

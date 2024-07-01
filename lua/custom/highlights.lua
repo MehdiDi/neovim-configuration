@@ -13,7 +13,7 @@ M.override = {
 
 ---@type HLTable
 M.add = {
-  NvimTreeOpenedFolderName = { fg = "green", bold = true }
+  NvimTreeOpenedFolderName = { fg = "green", bold = true },
 }
 return M
- ---  error = { cterm = "undercurl", gui = "undercurl", guifg = "#f44747", guisp = "#f44747" }
+---  error = { cterm = "undercurl", gui = "undercurl", guifg = "#f44747", guisp = "#f44747" }

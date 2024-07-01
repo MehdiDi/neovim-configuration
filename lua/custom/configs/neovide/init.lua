@@ -2,14 +2,14 @@
 --
 -- Helper function for transparency formatting
 
-vim.o.guifont = "Menlo:h12"
+vim.o.guifont = "MesloLGL Nerd Font Mono:h14"
 
 vim.g.neovide_padding_top = 0
 vim.g.neovide_padding_bottom = 0
 vim.g.neovide_padding_right = 0
 vim.g.neovide_padding_left = 0
 
-vim.g.neovide_background_color = "#1E1E1E"
+-- vim.g.neovide_background_color = "#1E1E1E"
 vim.g.neovide_floating_blur_amount_x = 2.0
 vim.g.neovide_floating_blur_amount_y = 2.0
 

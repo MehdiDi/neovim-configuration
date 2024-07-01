@@ -78,8 +78,8 @@ M.general = {
   v = {
     ["<Up>"] = { 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', "Move up", opts = { expr = true } },
     ["<Down>"] = { 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', "Move down", opts = { expr = true } },
-    ["<S-Tab>"] = { "<gv", "Indent line" },
-    ["<S-Tab"] = { ">gv", "Indent line" },
+    ["<S-Tab>"] = { "<gv", "Unindent line" },
+    ["<Tab>"] = { ">gv", "Indent line" },
     ["<leader>j"] = { "*``cgn", "Replace with next character" },
     ["<A-j>"] = { ":m '>+1<CR>gv=gv", "Move block down" },
     ["<A-k>"] = { ":m '<-2<CR>gv=gv", "Move block up" },
@@ -283,7 +283,7 @@ M.nvimtree = {
 
   n = {
     -- toggle
-    ["<C-n>"] = { "<cmd> NvimTreeToggle <CR>", "Toggle nvimtree" },
+    ["<leader><leader>"] = { "<cmd> NvimTreeToggle <CR>", "Toggle nvimtree" },
 
     -- focus
     ["<leader>e"] = { "<cmd> NvimTreeFocus <CR>", "Focus nvimtree" },

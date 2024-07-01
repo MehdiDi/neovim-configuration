@@ -1,5 +1,4 @@
 require "core"
-
 local custom_init_path = vim.api.nvim_get_runtime_file("lua/custom/init.lua", false)[1]
 
 if custom_init_path then
@@ -38,3 +37,7 @@ end
 -- It will update when Neovim is restarted or when the configuration is re-sourced
 
 require("lspconfig").prismals.setup {}
+-- vim.cmd "highlight Normal guibg=#1E1C31"
+-- vim.cmd "highlight Normal guibg=NONE guifg=#bbbbbb"
+
+vim.cmd "hi Normal guifg=#bbbbbb guibg=NONE gui=NONE"

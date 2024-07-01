@@ -451,6 +451,37 @@ local plugins = {
         }
       end,
     },
+    {
+      "mg979/vim-visual-multi",
+      lazy = false,
+      config = function()
+        vim.g.VM_maps = {
+          select = "<C-n>",
+          remove = "<C-n>",
+          insert = "<C-n>",
+          append = "<C-n>",
+          find = "<C-n>",
+          skip = "<C-n>",
+          last = "<C-n>",
+          next = "<C-n>",
+          prev = "<C-n>",
+          reset = "<C-n>",
+          exit = "<C-n>",
+          insert_line = "<C-n>",
+          append_line = "<C-n>",
+          find_next = "<C-n>",
+          find_prev = "<C-n>",
+          toggle = "<C-n>",
+          toggle_all = "<C-n>",
+          toggle_in_selection = "<C-n>",
+          toggle_skip = "<C-n>",
+          toggle_skip_in_selection = "<C-n>",
+          toggle_all_in_selection = "<C-n>",
+          toggle_all_in_lines = "<C-n>",
+          toggle_all_in_lines_skip = "<C-n>",
+        }
+      end,
+    },
   },
 
   -- {
