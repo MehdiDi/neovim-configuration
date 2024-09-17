@@ -335,6 +335,43 @@ local plugins = {
     end,
   },
   {
+    "folke/zen-mode.nvim",
+    lazy = false,
+    config = function()
+      require("zen-mode").setup {
+        window = {
+          backdrop = 1, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+          height = 0.85, -- height of the Zen window
+          width = 0.85, -- width of the Zen window
+          options = {
+            signcolumn = "no", -- disable signcolumn
+            number = false, -- disable number column
+            relativenumber = false, -- disable relative numbers
+            cursorline = false, -- disable cursorline
+            cursorcolumn = false, -- disable cursor column
+            foldcolumn = "0", -- disable fold column
+            list = false, -- disable whitespace characters
+          },
+        },
+        plugins = {
+          gitsigns = { enabled = false }, -- disables git signs
+          tmux = { enabled = false }, -- disables the tmux statusline
+          twilight = { enabled = false }, -- disables the twilight plugin
+        },
+        on_open = function()
+          vim.cmd [[
+            set foldlevel=20
+          ]]
+        end,
+        on_close = function()
+          vim.cmd [[
+            set foldlevel=0
+          ]]
+        end,
+      }
+    end,
+  },
+  {
     "folke/flash.nvim",
     event = "VeryLazy",
     ---@type Flash.Config
@@ -423,7 +460,6 @@ local plugins = {
       lazy = false,
       config = function()
         require("lualine").setup {
-
           theme = "embark",
           sections = {
             lualine_a = { "mode" },
@@ -433,8 +469,36 @@ local plugins = {
                 "filename",
                 path = 1,
               },
+              {
+                "diagnostics",
+
+                -- Table of diagnostic sources, available sources are:
+                --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
+                -- or a function that returns a table as such:
+                --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
+                sources = { "nvim_diagnostic", "coc" },
+
+                -- Displays diagnostics for the defined severity types
+                sections = { "error", "warn", "info", "hint" },
+
+                diagnostics_color = {
+                  -- Same values as the general color option can be used here.
+                  error = "DiagnosticError", -- Changes diagnostics' error color.
+                  warn = "DiagnosticWarn", -- Changes diagnostics' warn color.
+                  info = "DiagnosticInfo", -- Changes diagnostics' info color.
+                  hint = "DiagnosticHint", -- Changes diagnostics' hint color.
+                },
+                symbols = { error = "E", warn = "W", info = "I", hint = "H" },
+                colored = true, -- Displays diagnostics status in color if set to true.
+                update_in_insert = false, -- Update diagnostics in insert mode.
+                always_visible = false, -- Show diagnostics even if there are none.
+              },
             },
-            lualine_x = { "encoding", "fileformat", "filetype" },
+            lualine_x = {
+              "encoding",
+              "fileformat",
+              "filetype",
+            },
             lualine_y = { "progress" },
             lualine_z = { "location" },
           },
@@ -482,6 +546,79 @@ local plugins = {
         }
       end,
     },
+    {
+      "sindrets/diffview.nvim",
+      lazy = false,
+    },
+    { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+    {
+      "williamboman/mason.nvim",
+      opts = { ensure_installed = { "csharpier", "netcoredbg" } },
+    },
+    -- {
+    --   "yetone/avante.nvim",
+    --   event = "VeryLazy",
+    --   config = function()
+    --     require("avante").setup {
+    --       provider = "copilot",
+    --       behaviour = {
+    --         auto_suggestions = false, -- Experimental stage
+    --         auto_set_highlight_group = true,
+    --         auto_set_keymaps = true,
+    --         auto_apply_diff_after_generation = false,
+    --         support_paste_from_clipboard = false,
+    --       },
+    --       highlights = {
+    --         diff = {
+    --           current = "DiffText",
+    --           incoming = "DiffAdd",
+    --         },
+    --       },
+    --       hints = { enabled = true },
+    --     }
+    --   end,
+    --   lazy = false,
+    --   version = false, -- set this if you want to always pull the latest change
+    --   opts = {
+    --     -- add any opts here
+    --   },
+    --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    --   build = "make",
+    --   -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    --   dependencies = {
+    --     "stevearc/dressing.nvim",
+    --     "nvim-lua/plenary.nvim",
+    --     "MunifTanjim/nui.nvim",
+    --     --- The below dependencies are optional,
+    --     "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+    --     "zbirenbaum/copilot.lua", -- for providers='copilot'
+    --     {
+    --       -- support for image pasting
+    --       "HakonHarnes/img-clip.nvim",
+    --       event = "VeryLazy",
+    --       opts = {
+    --         -- recommended settings
+    --         default = {
+    --           embed_image_as_base64 = false,
+    --           prompt_for_file_name = false,
+    --           drag_and_drop = {
+    --             insert_mode = true,
+    --           },
+    --           -- required for Windows users
+    --           use_absolute_path = true,
+    --         },
+    --       },
+    --     },
+    --     {
+    --       -- Make sure to set this up properly if you have lazy=true
+    --       "MeanderingProgrammer/render-markdown.nvim",
+    --       opts = {
+    --         file_types = { "markdown", "Avante" },
+    --       },
+    --       ft = { "markdown", "Avante" },
+    --     },
+    --   },
+    -- },
   },
 
   -- {

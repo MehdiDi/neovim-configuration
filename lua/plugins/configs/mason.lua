@@ -8,6 +8,11 @@ local options = {
     "prisma-language-server",
     "goimports",
     "gofumpt",
+    "csharpier",
+    "netcoredbg",
+
+    "omnisharp",
+    "csharpier",
   }, -- not an option from mason.nvim
 
   PATH = "skip",

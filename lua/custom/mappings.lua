@@ -46,6 +46,18 @@ M.general = {
       end,
       "Reopen last closed buffer",
     },
+    ["<C-\\>"] = {
+      function()
+        vim.cmd "buffer #"
+      end,
+      "Switch to previous buffer",
+    },
+    ["<C-w><C-w>"] = {
+      function()
+        require("nvchad.tabufline").close_buffer()
+      end,
+      "Close buffer",
+    },
   },
   v = {
     [">"] = { ">gv", "indent" },

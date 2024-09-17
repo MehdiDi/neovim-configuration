@@ -18,6 +18,7 @@ vim.opt.rtp:prepend(lazypath)
 require "plugins"
 
 vim.cmd "colorscheme embark"
+-- vim.g.neovide_background_color = "#1E1C31"
 
 -- Function to get the current Git branch
 local function get_git_branch()
@@ -38,6 +39,11 @@ end
 
 require("lspconfig").prismals.setup {}
 -- vim.cmd "highlight Normal guibg=#1E1C31"
--- vim.cmd "highlight Normal guibg=NONE guifg=#bbbbbb"
+vim.cmd "highlight Normal guibg=NONE guifg=#bbbbbb"
 
-vim.cmd "hi Normal guifg=#bbbbbb guibg=NONE gui=NONE"
+-- vim.cmd "hi Normal guifg=#bbbbbb guibg=NONE gui=NONE"
+vim.cmd "hi Normal guifg=#bbbbbb"
+
+vim.g.lazyvim_python_lsp = "pyright"
+vim.g.lazyvim_python_ruff = "ruff_lsp"
+vim.cmd "set relativenumber"

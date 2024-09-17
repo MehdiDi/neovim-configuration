@@ -114,12 +114,6 @@ M.tabufline = {
     },
 
     -- close buffer + hide terminal buffer
-    ["<leader>x"] = {
-      function()
-        require("nvchad.tabufline").close_buffer()
-      end,
-      "Close buffer",
-    },
   },
 }
 
@@ -227,14 +221,14 @@ M.lspconfig = {
 
     ["[d"] = {
       function()
-        vim.diagnostic.goto_prev { float = { border = "rounded" } }
+        vim.diagnostic.goto_prev { float = { border = "rounded" }, severity = vim.diagnostic.severity.ERROR }
       end,
       "Goto prev",
     },
 
     ["]d"] = {
       function()
-        vim.diagnostic.goto_next { float = { border = "rounded" } }
+        vim.diagnostic.goto_next { float = { border = "rounded" }, severity = vim.diagnostic.severity.ERROR }
       end,
       "Goto next",
     },
