@@ -6,6 +6,25 @@ return {
     config = function()
       local lspconfig = require("lspconfig")
 
+      -- Modern diagnostics: underline + virtual text, no gutter letters
+      vim.diagnostic.config({
+        signs = false,
+        underline = true,
+        virtual_text = { spacing = 2, source = "if_many", prefix = "●" },
+        update_in_insert = false,
+        severity_sort = true,
+        float = { border = "rounded", source = "always" },
+      })
+      -- Ensure underline style is visible across colorschemes
+      local function set_diag_hl()
+        pcall(vim.api.nvim_set_hl, 0, "DiagnosticUnderlineError", { undercurl = true, sp = "#ff5555" })
+        pcall(vim.api.nvim_set_hl, 0, "DiagnosticUnderlineWarn",  { undercurl = true, sp = "#ffaf00" })
+        pcall(vim.api.nvim_set_hl, 0, "DiagnosticUnderlineInfo",  { undercurl = true, sp = "#5fafff" })
+        pcall(vim.api.nvim_set_hl, 0, "DiagnosticUnderlineHint",  { undercurl = true, sp = "#5fd7af" })
+      end
+      set_diag_hl()
+      vim.api.nvim_create_autocmd("ColorScheme", { callback = set_diag_hl })
+
       -- capabilities (extend if cmp is present later)
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       local ok, cmp = pcall(require, "cmp_nvim_lsp")
@@ -19,7 +38,28 @@ return {
         map("n", "gd", vim.lsp.buf.definition, "LSP: Goto definition")
         map("n", "gr", vim.lsp.buf.references, "LSP: References")
         map("n", "gi", vim.lsp.buf.implementation, "LSP: Implementations")
-        map("n", "gD", vim.lsp.buf.declaration, "LSP: Declaration")
+        map("n", "gD", function()
+          -- Prefer type definition (e.g. class/interface) when available
+          local clients = vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = bufnr })
+            or vim.lsp.buf_get_clients(bufnr)
+          local has_type = false
+          if clients then
+            for _, c in pairs(clients) do
+              local caps = c.server_capabilities or {}
+              if caps.typeDefinitionProvider then
+                has_type = true
+                break
+              end
+            end
+          end
+          if has_type then
+            vim.lsp.buf.type_definition()
+          elseif vim.lsp.buf.definition then
+            vim.lsp.buf.definition()
+          else
+            vim.lsp.buf.declaration()
+          end
+        end, "LSP: Type definition (fallback)")
         map("n", "K", vim.lsp.buf.hover, "LSP: Hover")
         map("n", "<leader>rn", vim.lsp.buf.rename, "LSP: Rename")
         map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "LSP: Code action")
@@ -72,11 +112,13 @@ return {
       -- ESLint (re-enabled) with quiet handlers to avoid intrusive popups
       if lspconfig.eslint then
         lspconfig.eslint.setup({
+          -- Keep eslint for code actions and formatting; avoid duplicate diagnostics
           on_attach = on_attach,
           capabilities = capabilities,
           handlers = {
             ["window/showMessage"] = function() end,
             ["window/logMessage"] = function() end,
+            ["textDocument/publishDiagnostics"] = function() end, -- suppress eslint signs
           },
           settings = {
             workingDirectory = { mode = "auto" },

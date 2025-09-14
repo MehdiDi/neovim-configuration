@@ -11,6 +11,10 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus"
 opt.updatetime = 200
 opt.completeopt = "menu,menuone,noselect"
+-- Keep UI stable: reserve space for signs (git/diagnostics)
+opt.signcolumn = "yes" -- keep one stable column (git signs), diagnostics use underline/virtual text
+-- Global statusline for modern look
+opt.laststatus = 3
 
 -- Indentation
 opt.autoindent = true

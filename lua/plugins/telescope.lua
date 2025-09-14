@@ -25,6 +25,17 @@ return {
       local actions = require("telescope.actions")
       return {
         defaults = {
+          -- Show best matches at the top with a clearer layout
+          sorting_strategy = "ascending",
+          layout_strategy = "flex",
+          layout_config = {
+            prompt_position = "top",
+            width = 0.95,
+            height = 12, -- cap total height ~10 results
+            preview_cutoff = 120,
+            horizontal = { preview_width = 0.55 },
+            vertical = { mirror = false },
+          },
           mappings = {
             i = {
               ["<C-j>"] = actions.move_selection_next,
@@ -35,10 +46,37 @@ return {
           prompt_prefix = " ",
           selection_caret = " ",
           path_display = { "smart" },
+          wrap_results = true,
+          dynamic_preview_title = true,
+          results_title = false,
+          set_env = { COLORTERM = "truecolor" },
+          -- Include hidden files in grep but ignore .git
+          vimgrep_arguments = (function()
+            local args = require("telescope.config").values.vimgrep_arguments
+            local copy = {}
+            for _, v in ipairs(args) do table.insert(copy, v) end
+            table.insert(copy, "--hidden")
+            table.insert(copy, "--glob")
+            table.insert(copy, "!.git/*")
+            return copy
+          end)(),
           file_ignore_patterns = { ".git/", "node_modules/", "dist/", "build/" },
         },
         pickers = {
-          find_files = { hidden = true },
+          find_files = { hidden = true, theme = "dropdown", previewer = false, results_height = 10 },
+          buffers = {
+            sort_mru = true,
+            sort_lastused = true,
+            ignore_current_buffer = true,
+            theme = "dropdown",
+            previewer = false,
+            results_height = 10,
+          },
+          live_grep = {
+            theme = "dropdown",
+            previewer = false,
+            results_height = 10,
+          },
         },
         extensions = {
           fzf = {
