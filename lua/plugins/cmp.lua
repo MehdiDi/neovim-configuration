@@ -47,6 +47,7 @@ return {
           ["<C-u>"] = cmp.mapping.scroll_docs(-4),
         }),
         sources = cmp.config.sources({
+          { name = "copilot", group_index = 1, priority = 100 },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "path" },
@@ -61,6 +62,7 @@ return {
           fields = { "abbr", "menu", "kind" },
           format = function(entry, vim_item)
             vim_item.menu = ({
+              copilot = "[AI]",
               nvim_lsp = "[LSP]",
               luasnip = "[Snp]",
               buffer = "[Buf]",
@@ -73,4 +75,3 @@ return {
     end,
   },
 }
-

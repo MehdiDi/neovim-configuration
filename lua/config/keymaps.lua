@@ -22,6 +22,19 @@ map("n", "<leader>lf", function()
   end
 end, "LSP: Show diagnostic")
 
+-- LSP Code Actions on Ctrl-Comma
+local function has_lsp()
+  local clients = (vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = 0 }))
+    or (vim.lsp.buf_get_clients and vim.lsp.buf_get_clients(0))
+  return clients and next(clients) ~= nil
+end
+map("n", "<C-,>", function()
+  if has_lsp() then vim.lsp.buf.code_action() else vim.notify("No LSP attached", vim.log.levels.WARN) end
+end, "LSP: Code actions", { silent = true })
+map("v", "<C-,>", function()
+  if has_lsp() then vim.lsp.buf.code_action() else vim.notify("No LSP attached", vim.log.levels.WARN) end
+end, "LSP: Code actions", { silent = true })
+
 -- LSP hover on symbol under cursor (Shift-K)
 map("n", "K", function()
   local has_clients = false

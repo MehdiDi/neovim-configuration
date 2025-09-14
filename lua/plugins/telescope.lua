@@ -27,11 +27,12 @@ return {
         defaults = {
           -- Show best matches at the top with a clearer layout
           sorting_strategy = "ascending",
-          layout_strategy = "flex",
+          layout_strategy = "center",
           layout_config = {
+            anchor = "N", -- place window closer to top of the screen
             prompt_position = "top",
             width = 0.95,
-            height = 12, -- cap total height ~10 results
+            height = 12, -- ~10 results visible
             preview_cutoff = 120,
             horizontal = { preview_width = 0.55 },
             vertical = { mirror = false },
@@ -63,7 +64,7 @@ return {
           file_ignore_patterns = { ".git/", "node_modules/", "dist/", "build/" },
         },
         pickers = {
-          find_files = { hidden = true, theme = "dropdown", previewer = false, results_height = 10 },
+          find_files = { hidden = true, theme = "dropdown", previewer = false, results_height = 10, layout_config = { anchor = "N" } },
           buffers = {
             sort_mru = true,
             sort_lastused = true,
