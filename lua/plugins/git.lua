@@ -32,6 +32,19 @@ return {
     },
   },
 
+  -- Blame popup with patch for the current line
+  {
+    "rhysd/git-messenger.vim",
+    keys = {
+      { "<leader>gb", "<cmd>GitMessenger<CR>", desc = "Blame (popup with patch)" },
+    },
+    init = function()
+      vim.g.git_messenger_always_into_popup = true
+      vim.g.git_messenger_floating_win_opts = { border = "rounded" }
+      vim.g.git_messenger_include_diff = "current" -- show the hunk that touched the line
+    end,
+  },
+
   -- Telescope git pickers via commands
   {
     -- Git pickers via Telescope; plugin is configured elsewhere

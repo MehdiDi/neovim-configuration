@@ -92,7 +92,9 @@ return {
         map("n", "<leader>gP", function()
           if gs.preview_hunk_inline then gs.preview_hunk_inline() else gs.preview_hunk() end
         end, "Preview hunk (inline)")
-        map("n", "<leader>gb", gs.toggle_current_line_blame, "Toggle blame line")
+        -- Inline blame kept available on a different mapping to avoid conflict with popup blame
+        map("n", "<leader>g?", gs.toggle_current_line_blame, "Toggle blame (inline)")
+        map("n", "<leader>gB", function() gs.blame_line({ full = true }) end, "Blame line (popup)")
         map("n", "<leader>gd", gs.diffthis, "Diff this")
         -- Text object for hunks
         map({"o","x"}, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Inside hunk")
