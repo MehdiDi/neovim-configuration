@@ -66,6 +66,13 @@ return {
         add = { text = "+" }, change = { text = "~" }, delete = { text = "_" },
         topdelete = { text = "‾" }, changedelete = { text = "~" }, untracked = { text = "+" },
       },
+      preview_config = {
+        border = "rounded",
+        style = "minimal",
+        relative = "cursor",
+        row = 1,
+        col = 1,
+      },
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
         local function map(mode, lhs, rhs, desc)
@@ -81,7 +88,10 @@ return {
         map("n", "<leader>gR", gs.reset_buffer, "Reset buffer")
         map("n", "<leader>gu", gs.undo_stage_hunk, "Undo stage hunk")
         -- Info/preview
-        map("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
+        map("n", "<leader>gp", gs.preview_hunk, "Preview hunk (float)")
+        map("n", "<leader>gP", function()
+          if gs.preview_hunk_inline then gs.preview_hunk_inline() else gs.preview_hunk() end
+        end, "Preview hunk (inline)")
         map("n", "<leader>gb", gs.toggle_current_line_blame, "Toggle blame line")
         map("n", "<leader>gd", gs.diffthis, "Diff this")
         -- Text object for hunks

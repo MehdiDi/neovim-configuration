@@ -12,7 +12,8 @@ opt.clipboard = "unnamedplus"
 opt.updatetime = 200
 opt.completeopt = "menu,menuone,noselect"
 -- Keep UI stable: reserve space for signs (git/diagnostics)
-opt.signcolumn = "yes" -- keep one stable column (git signs), diagnostics use underline/virtual text
+opt.signcolumn = "yes:2" -- reserve 2 columns to avoid any left-shift when multiple signs appear
+opt.numberwidth = 4 -- keep line number column stable (prevents jump at 100+ lines)
 -- Global statusline for modern look
 opt.laststatus = 3
 
