@@ -1,24 +1,23 @@
 return {
-  -- GitHub Copilot core (disabled inline UI; integrated via cmp)
+  -- GitHub Copilot core with inline suggestions (VS Code style)
   {
     "zbirenbaum/copilot.lua",
     event = "InsertEnter",
     cmd = { "Copilot" },
     opts = {
-      suggestion = { enabled = false },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        -- Keymaps for inline suggestions
+        keymap = {
+          accept = "<C-j>",
+          next = "<C-n>",
+          prev = "<C-p>",
+          dismiss = "<C-]>",
+        },
+      },
       panel = { enabled = false },
       filetypes = { markdown = true, help = true, gitcommit = true, ["*"] = true },
     },
   },
-
-  -- Bridge Copilot -> nvim-cmp source
-  {
-    "zbirenbaum/copilot-cmp",
-    dependencies = { "zbirenbaum/copilot.lua" },
-    event = "InsertEnter",
-    config = function()
-      require("copilot_cmp").setup()
-    end,
-  },
 }
-

@@ -32,7 +32,7 @@ return {
             anchor = "N", -- place window closer to top of the screen
             prompt_position = "top",
             width = 0.95,
-            height = 12, -- ~10 results visible
+            height = 0.8, -- Much larger window
             preview_cutoff = 120,
             horizontal = { preview_width = 0.55 },
             vertical = { mirror = false },
@@ -46,7 +46,7 @@ return {
           },
           prompt_prefix = " ",
           selection_caret = " ",
-          path_display = { "smart" },
+          path_display = { "truncate" },
           wrap_results = true,
           dynamic_preview_title = true,
           results_title = false,
@@ -64,7 +64,13 @@ return {
           file_ignore_patterns = { ".git/", "node_modules/", "dist/", "build/" },
         },
         pickers = {
-          find_files = { hidden = true, theme = "dropdown", previewer = false, results_height = 10, layout_config = { anchor = "N" } },
+          find_files = {
+            hidden = true,
+            theme = "dropdown",
+            previewer = false,
+            results_height = 20,
+            layout_config = { anchor = "N", width = 0.9, height = 0.7 },
+          },
           buffers = {
             sort_mru = true,
             sort_lastused = true,

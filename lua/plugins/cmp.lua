@@ -47,7 +47,6 @@ return {
           ["<C-u>"] = cmp.mapping.scroll_docs(-4),
         }),
         sources = cmp.config.sources({
-          { name = "copilot", group_index = 1, priority = 100 },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "path" },

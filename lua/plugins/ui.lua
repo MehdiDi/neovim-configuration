@@ -7,7 +7,64 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
+      local function set_embark_background(alpha)
+        -- Keep a record for GUI frontends (e.g., Neovide) that honor alpha channels
+        if vim.g.neovide then
+          local hex = "#1e1c31"
+          -- Compose RGBA string Neovide expects (#RRGGBBAA)
+          vim.g.neovide_transparency = alpha
+          vim.g.neovide_background_color = string.format("%s%02x", hex, math.floor(alpha * 255))
+        end
+
+        -- Make the theme respect the terminal/GUI transparency level
+        local transparent_groups = {
+          "Normal",
+          "NormalNC",
+          "SignColumn",
+          "NormalFloat",
+          "FloatBorder",
+          "TelescopeNormal",
+          "TelescopeBorder",
+          "NvimTreeNormal",
+          "NvimTreeNormalNC",
+        }
+        for _, group in ipairs(transparent_groups) do
+          pcall(vim.api.nvim_set_hl, 0, group, { bg = "NONE", ctermbg = "NONE" })
+        end
+      end
+
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "embark",
+        callback = function()
+          set_embark_background(0.85)
+        end,
+      })
+      set_embark_background(0.85)
       vim.cmd.colorscheme("embark")
+    end,
+  },
+
+  -- Buffer line (tabs for buffers)
+  {
+    "akinsho/bufferline.nvim",
+    event = { "BufAdd", "BufEnter" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        mode = "buffers",
+        numbers = "none",
+        diagnostics = false,
+        always_show_bufferline = true,
+        show_buffer_close_icons = false,
+        show_close_icon = false,
+        separator_style = "thin",
+        offsets = {
+          { filetype = "NvimTree", text = "Explorer", highlight = "Directory", separator = true },
+        },
+      },
+    },
+    config = function(_, opts)
+      require("bufferline").setup(opts)
     end,
   },
 

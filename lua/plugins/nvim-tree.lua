@@ -4,7 +4,7 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = { "NvimTreeToggle", "NvimTreeFindFile" },
     keys = {
-      { "<leader><leader>", "<cmd>NvimTreeToggle<cr>", desc = "Explorer: toggle" },
+      { "<leader><leader>", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Explorer: toggle & focus current file" },
       { "<leader>o", "<cmd>NvimTreeFindFile<cr>", desc = "Explorer: reveal file" },
     },
     opts = {
@@ -12,6 +12,11 @@ return {
       renderer = { group_empty = true },
       filters = { dotfiles = false },
       git = { enable = true },
+      hijack_cursor = true,
+      update_focused_file = {
+        enable = true,
+        update_root = false,
+      },
     },
     config = function(_, opts)
       require("nvim-tree").setup(opts)

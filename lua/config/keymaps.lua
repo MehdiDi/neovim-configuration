@@ -6,6 +6,10 @@ local function map(mode, lhs, rhs, desc, opts)
 end
 
 map("n", "<C-s>", function() vim.cmd("w") end, "Save")
+-- Clear search highlight with Esc in normal mode
+map("n", "<Esc>", function()
+  if vim.v.hlsearch == 1 then vim.cmd("nohlsearch") end
+end, "Clear search highlight", { silent = true })
 map("n", "<leader>wq", ":wq<CR>", "Write and quit")
 
 -- Window navigation with Ctrl + h/j/k/l
@@ -55,10 +59,35 @@ end, "LSP: Hover docs or default K")
 map("n", "<C-w>w", ":bd<CR>", "Close buffer", { silent = true })
 map("n", "<C-w><C-w>", ":bd<CR>", "Close buffer", { silent = true })
 
+-- Buffers: jump to alternate/previous buffer
+map("n", "<C-b>b", function()
+  local ok = pcall(require("bufferline").cycle, -1)
+  if not ok then vim.cmd("b#") end
+end, "Previous buffer", { silent = true })
+-- Also map Ctrl-6 to alternate buffer (toggle last two)
+-- Note: <C-^> is Vim's built-in toggle; many terminals send it as <C-6>
+map("n", "<C-6>", ":b#<CR>", "Alternate buffer", { silent = true })
+-- Terminals often treat <C-4> as SIGQUIT ("^\\"). Use Alt-4 as a safe option.
+map("n", "<A-4>", ":b#<CR>", "Alternate buffer (Alt-4)", { silent = true })
+-- User-requested: map Ctrl-\\ to toggle to the last buffer
+map("n", "<C-\\>", ":b#<CR>", "Alternate buffer (Ctrl-\\)", { silent = true })
+
+-- Buffers: cycle next/previous with Tab / Shift-Tab
+map("n", "<Tab>", function()
+  local ok = pcall(vim.cmd, "BufferLineCycleNext")
+  if not ok then vim.cmd("bnext") end
+end, "Next buffer", { silent = true })
+map("n", "<S-Tab>", function()
+  local ok = pcall(vim.cmd, "BufferLineCyclePrev")
+  if not ok then vim.cmd("bprevious") end
+end, "Previous buffer", { silent = true })
+
 
 -- INSERT MODE
 map("i", "<C-s>", "<Esc>:w<CR>", "Save and exit insert", { silent = true })
 map("i", "jk", "<Esc>", "Exit to normal (jk)", { silent = true })
+map("i", "<C-l>", "<Right>", "Move right", { silent = true })
+map("i", "<C-h>", "<Left>", "Move left", { silent = true })
 
 -- VISUAL MODE
 -- Keep selection when indenting
