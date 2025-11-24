@@ -50,6 +50,16 @@ return {
     event = { "BufAdd", "BufEnter" },
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
+      -- Make the active buffer visually distinct
+      highlights = {
+        buffer_selected = { bold = true, italic = false, fg = "#FFFFFF" },
+        diagnostic_selected = { bold = true, italic = false },
+        hint_selected = { bold = true, italic = false },
+        info_selected = { bold = true, italic = false },
+        warning_selected = { bold = true, italic = false },
+        error_selected = { bold = true, italic = false },
+        indicator_selected = { fg = "#91ddff", bg = "#1e1c31" },
+      },
       options = {
         mode = "buffers",
         numbers = "none",
