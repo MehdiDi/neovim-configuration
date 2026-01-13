@@ -63,8 +63,13 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     opts = {
       signs = {
-        add = { text = "+" }, change = { text = "~" }, delete = { text = "_" },
-        topdelete = { text = "‾" }, changedelete = { text = "~" }, untracked = { text = "+" },
+        -- Thin bar/chevron glyphs offer a cleaner, modern gutter
+        add = { text = "▎" },
+        change = { text = "▎" },
+        delete = { text = "" },
+        topdelete = { text = "" },
+        changedelete = { text = "▎" },
+        untracked = { text = "▎" },
       },
       preview_config = {
         border = "rounded",

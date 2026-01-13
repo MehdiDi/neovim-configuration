@@ -23,7 +23,10 @@ return {
         "tsx", -- react/tsx
         "html",
         "css",
+        "kotlin",
         "go",
+        "c",
+        "cpp",
       },
       highlight = { enable = true, additional_vim_regex_highlighting = false },
       -- Treesitter indent can be aggressive for JS/TS. Use Vim's indent instead.

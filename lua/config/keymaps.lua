@@ -39,6 +39,22 @@ map("v", "<C-,>", function()
   if has_lsp() then vim.lsp.buf.code_action() else vim.notify("No LSP attached", vim.log.levels.WARN) end
 end, "LSP: Code actions", { silent = true })
 
+-- LSP symbols (Telescope): quick jump to methods/functions or variables/members
+local function symbol_picker(kinds, prompt_title)
+  local ok, builtin = pcall(require, "telescope.builtin")
+  if not ok then
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+    return
+  end
+  builtin.lsp_document_symbols({ symbols = kinds, prompt_title = prompt_title })
+end
+map("n", "<leader>sm", function()
+  symbol_picker({ "Function", "Method" }, "Methods / Functions")
+end, "LSP: Symbols (methods/functions)")
+map("n", "<leader>sv", function()
+  symbol_picker({ "Variable", "Field", "Property", "Constant", "EnumMember" }, "Variables / Members")
+end, "LSP: Symbols (variables/members)")
+
 -- LSP hover on symbol under cursor (Shift-K)
 map("n", "K", function()
   local has_clients = false
