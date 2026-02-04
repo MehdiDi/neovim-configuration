@@ -11,6 +11,7 @@ return {
       "clang-format",
       "kotlin-language-server",
       "ktlint",
+      "prisma-language-server",
       "omnisharp",
       "gopls",
       "goimports",

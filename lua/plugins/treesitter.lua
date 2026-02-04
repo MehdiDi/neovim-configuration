@@ -45,4 +45,17 @@ return {
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      enable = true,
+      max_lines = 3,
+      trim_scope = "outer",
+      mode = "cursor",
+    },
+    config = function(_, opts)
+      require("treesitter-context").setup(opts)
+    end,
+  },
 }

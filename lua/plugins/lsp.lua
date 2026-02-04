@@ -4,8 +4,6 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      local lspconfig = require("lspconfig")
-      local util = require("lspconfig.util")
       local fn = vim.fn
 
       -- Utility helpers for optional table inputs (env/config overrides)
@@ -116,176 +114,190 @@ return {
       end
 
       -- TypeScript/JavaScript server (new name: ts_ls; fallback: tsserver)
-      local ts = lspconfig.ts_ls or lspconfig.tsserver
-      if ts then
-        ts.setup({
-          on_attach = function(client, bufnr)
-            -- Prefer Prettier over tsserver formatting
-            client.server_capabilities.documentFormattingProvider = false
-            on_attach(client, bufnr)
-          end,
-          capabilities = capabilities,
-          settings = {
-            javascript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayVariableTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-              },
-            },
-            typescript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayVariableTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-              },
+      vim.lsp.config("ts_ls", {
+        on_attach = function(client, bufnr)
+          -- Prefer Prettier over tsserver formatting
+          client.server_capabilities.documentFormattingProvider = false
+          on_attach(client, bufnr)
+        end,
+        capabilities = capabilities,
+        settings = {
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayVariableTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
             },
           },
-        })
-      end
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayVariableTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+            },
+          },
+        },
+      })
 
       -- ESLint (re-enabled) with quiet handlers to avoid intrusive popups
-      if lspconfig.eslint then
-        lspconfig.eslint.setup({
-          -- Keep eslint for code actions and formatting; avoid duplicate diagnostics
-          on_attach = on_attach,
-          capabilities = capabilities,
-          handlers = {
-            ["window/showMessage"] = function() end,
-            ["window/logMessage"] = function() end,
-            ["textDocument/publishDiagnostics"] = function() end, -- suppress eslint signs
-          },
-          settings = {
-            workingDirectory = { mode = "auto" },
-            codeAction = { disableRuleComment = { enable = true, location = "separateLine" } },
-            format = false,
-          },
-        })
-      end
+      vim.lsp.config("eslint", {
+        -- Keep eslint for code actions and formatting; avoid duplicate diagnostics
+        on_attach = on_attach,
+        capabilities = capabilities,
+        handlers = {
+          ["window/showMessage"] = function() end,
+          ["window/logMessage"] = function() end,
+          ["textDocument/publishDiagnostics"] = function() end, -- suppress eslint signs
+        },
+        settings = {
+          workingDirectory = { mode = "auto" },
+          codeAction = { disableRuleComment = { enable = true, location = "separateLine" } },
+          format = false,
+        },
+      })
+
+      -- Prisma (schema.prisma) language server
+      vim.lsp.config("prismals", {
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
 
       -- C/C++ via clangd
-      if lspconfig.clangd then
-        local cmd = normalize_list(vim.g.clangd_cmd) or { "clangd" }
-        cmd = vim.deepcopy(cmd)
+      local cmd = normalize_list(vim.g.clangd_cmd) or { "clangd" }
+      cmd = vim.deepcopy(cmd)
 
-        local query_drivers = derive_query_drivers()
-        if query_drivers then
-          for _, pattern in ipairs(query_drivers) do
-            table.insert(cmd, "--query-driver=" .. pattern)
-          end
+      local query_drivers = derive_query_drivers()
+      if query_drivers then
+        for _, pattern in ipairs(query_drivers) do
+          table.insert(cmd, "--query-driver=" .. pattern)
         end
-
-        local fallback_flags = normalize_list(vim.g.clangd_fallback_flags)
-        if not fallback_flags then
-          local fallback_target = vim.g.clangd_fallback_target
-            or vim.env.CLANGD_FALLBACK_TARGET
-            or (query_drivers and "arm-none-eabi")
-          if fallback_target and fallback_target ~= "" then
-            fallback_flags = { "-target=" .. fallback_target }
-            local fallback_cpu = vim.g.clangd_fallback_mcpu or vim.env.CLANGD_FALLBACK_MCPU
-            if fallback_cpu and fallback_cpu ~= "" then
-              table.insert(fallback_flags, "-mcpu=" .. fallback_cpu)
-            end
-          end
-        end
-
-        local clangd_opts = {
-          on_attach = on_attach,
-          capabilities = capabilities,
-        }
-        if query_drivers or vim.g.clangd_cmd then clangd_opts.cmd = cmd end
-        if fallback_flags then
-          clangd_opts.init_options = { fallbackFlags = fallback_flags }
-        end
-        lspconfig.clangd.setup(clangd_opts)
       end
+
+      local fallback_flags = normalize_list(vim.g.clangd_fallback_flags)
+      if not fallback_flags then
+        local fallback_target = vim.g.clangd_fallback_target
+          or vim.env.CLANGD_FALLBACK_TARGET
+          or (query_drivers and "arm-none-eabi")
+        if fallback_target and fallback_target ~= "" then
+          fallback_flags = { "-target=" .. fallback_target }
+          local fallback_cpu = vim.g.clangd_fallback_mcpu or vim.env.CLANGD_FALLBACK_MCPU
+          if fallback_cpu and fallback_cpu ~= "" then
+            table.insert(fallback_flags, "-mcpu=" .. fallback_cpu)
+          end
+        end
+      end
+
+      local clangd_opts = {
+        on_attach = on_attach,
+        capabilities = capabilities,
+      }
+      if query_drivers or vim.g.clangd_cmd then clangd_opts.cmd = cmd end
+      if fallback_flags then
+        clangd_opts.init_options = { fallbackFlags = fallback_flags }
+      end
+      vim.lsp.config("clangd", clangd_opts)
 
       -- Kotlin via kotlin-language-server (formatting handled by ktlint)
-      if lspconfig.kotlin_language_server then
-        lspconfig.kotlin_language_server.setup({
-          on_attach = function(client, bufnr)
-            client.server_capabilities.documentFormattingProvider = false
-            on_attach(client, bufnr)
-          end,
-          capabilities = capabilities,
-        })
-      end
+      vim.lsp.config("kotlin_language_server", {
+        on_attach = function(client, bufnr)
+          client.server_capabilities.documentFormattingProvider = false
+          on_attach(client, bufnr)
+        end,
+        capabilities = capabilities,
+      })
 
       -- Go via gopls; rely on external formatters (goimports/gofumpt)
-      if lspconfig.gopls then
-        lspconfig.gopls.setup({
-          on_attach = function(client, bufnr)
-            client.server_capabilities.documentFormattingProvider = false
-            on_attach(client, bufnr)
-          end,
-          capabilities = capabilities,
-          settings = {
-            gopls = {
-              gofumpt = true,
-              analyses = {
-                unusedparams = true,
-                nilness = true,
-                unusedwrite = true,
-                unusedvariable = true,
-                fillreturns = true,
-                shadow = true,
-              },
-              codelenses = {
-                gc_details = false,
-                test = true,
-                tidy = true,
-              },
-              staticcheck = true,
+      vim.lsp.config("gopls", {
+        on_attach = function(client, bufnr)
+          client.server_capabilities.documentFormattingProvider = false
+          on_attach(client, bufnr)
+        end,
+        capabilities = capabilities,
+        settings = {
+          gopls = {
+            gofumpt = true,
+            analyses = {
+              unusedparams = true,
+              nilness = true,
+              unusedwrite = true,
+              unusedvariable = true,
+              fillreturns = true,
+              shadow = true,
             },
+            codelenses = {
+              gc_details = false,
+              test = true,
+              tidy = true,
+            },
+            staticcheck = true,
           },
-        })
-      end
+        },
+      })
 
       -- C# / Unity via OmniSharp (works with standard .sln and Unity projects)
-      if lspconfig.omnisharp then
-        local function get_omnisharp_cmd()
-          local binary = "omnisharp"
-          if vim.fn.has("win32") == 1 then binary = binary .. ".cmd" end
+      local function get_omnisharp_cmd()
+        local binary = "omnisharp"
+        if vim.fn.has("win32") == 1 then binary = binary .. ".cmd" end
 
-          -- Prefer Mason-managed binary (available in stdpath("data")/mason/bin)
-          local mason_bin = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin", binary)
-          if vim.loop.fs_stat(mason_bin) then
-            return { mason_bin, "--languageserver", "--hostPID", tostring(vim.fn.getpid()) }
-          end
-
-          -- Fallback to PATH lookup (covers manual installs / global dotnet tool)
-          local system_path = vim.fn.exepath(binary)
-          if system_path ~= "" then
-            return { system_path, "--languageserver", "--hostPID", tostring(vim.fn.getpid()) }
-          end
+        -- Prefer Mason-managed binary (available in stdpath("data")/mason/bin)
+        local mason_bin = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin", binary)
+        if vim.loop.fs_stat(mason_bin) then
+          return { mason_bin, "--languageserver", "--hostPID", tostring(vim.fn.getpid()) }
         end
 
-        local root_pattern = util.root_pattern("*.sln", "*.csproj", ".git")
-        local omnisharp_opts = {
+        -- Fallback to PATH lookup (covers manual installs / global dotnet tool)
+        local system_path = vim.fn.exepath(binary)
+        if system_path ~= "" then
+          return { system_path, "--languageserver", "--hostPID", tostring(vim.fn.getpid()) }
+        end
+      end
+
+      local function find_omnisharp_root(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        if fname == "" then return end
+        local start = vim.fs.dirname(fname)
+        local found = vim.fs.find(function(name)
+          return name:match("%.sln$") or name:match("%.csproj$") or name == ".git"
+        end, { path = start, upward = true, limit = 1 })
+        if #found > 0 then
+          on_dir(vim.fs.dirname(found[1]))
+        else
+          on_dir(start)
+        end
+      end
+
+      local omnisharp_cmd = get_omnisharp_cmd()
+      if not omnisharp_cmd then
+        vim.notify(
+          "OmniSharp executable not found. Run :Mason to install omnisharp or ensure it is on PATH.",
+          vim.log.levels.ERROR
+        )
+      else
+        vim.lsp.config("omnisharp", {
           on_attach = function(client, bufnr)
             -- Unity / C# projects usually handle formatting via dotnet format or csharpier
             client.server_capabilities.documentFormattingProvider = false
             on_attach(client, bufnr)
           end,
           capabilities = capabilities,
-          root_dir = function(fname)
-            return root_pattern(fname) or util.path.dirname(fname)
-          end,
+          root_dir = find_omnisharp_root,
           enable_roslyn_analyzers = true,
           enable_import_completion = true,
           organize_imports_on_format = true,
-        }
-        local omnisharp_cmd = get_omnisharp_cmd()
-        if not omnisharp_cmd then
-          vim.notify(
-            "OmniSharp executable not found. Run :Mason to install omnisharp or ensure it is on PATH.",
-            vim.log.levels.ERROR
-          )
-        else
-          omnisharp_opts.cmd = omnisharp_cmd
-          lspconfig.omnisharp.setup(omnisharp_opts)
-        end
+          cmd = omnisharp_cmd,
+        })
       end
+
+      local servers = {
+        "ts_ls",
+        "eslint",
+        "prismals",
+        "clangd",
+        "kotlin_language_server",
+        "gopls",
+      }
+      if omnisharp_cmd then table.insert(servers, "omnisharp") end
+      vim.lsp.enable(servers)
     end,
   },
 }
