@@ -11,6 +11,27 @@ map("n", "<Esc>", function()
   if vim.v.hlsearch == 1 then vim.cmd("nohlsearch") end
 end, "Clear search highlight", { silent = true })
 map("n", "<leader>wq", ":wq<CR>", "Write and quit")
+map("n", "<leader>tt", function()
+  local win = vim.g.term_toggle_win
+  if win and vim.api.nvim_win_is_valid(win) then
+    vim.api.nvim_win_hide(win)
+    vim.g.term_toggle_win = nil
+    return
+  end
+
+  local buf = vim.g.term_toggle_buf
+  vim.cmd("belowright 12split")
+  local new_win = vim.api.nvim_get_current_win()
+  if buf and vim.api.nvim_buf_is_valid(buf) then
+    vim.api.nvim_win_set_buf(new_win, buf)
+  else
+    vim.cmd("terminal")
+    buf = vim.api.nvim_get_current_buf()
+    vim.g.term_toggle_buf = buf
+  end
+  vim.g.term_toggle_win = new_win
+  vim.cmd("startinsert")
+end, "Terminal: toggle below")
 
 -- Window navigation with Ctrl + h/j/k/l
 map("n", "<C-h>", "<C-w>h", "Window left")
@@ -104,6 +125,7 @@ map("i", "<C-s>", "<Esc>:w<CR>", "Save and exit insert", { silent = true })
 map("i", "jk", "<Esc>", "Exit to normal (jk)", { silent = true })
 map("i", "<C-l>", "<Right>", "Move right", { silent = true })
 map("i", "<C-h>", "<Left>", "Move left", { silent = true })
+map("t", "jkk", "<C-\\><C-n>", "Terminal: exit insert (jkk)", { silent = true })
 
 -- VISUAL MODE
 -- Keep selection when indenting

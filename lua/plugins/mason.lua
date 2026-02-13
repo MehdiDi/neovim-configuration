@@ -13,6 +13,7 @@ return {
       "ktlint",
       "prisma-language-server",
       "omnisharp",
+      "sourcekit-lsp",
       "gopls",
       "goimports",
       "gofumpt",

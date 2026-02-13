@@ -288,6 +288,43 @@ return {
         })
       end
 
+      -- Swift via sourcekit-lsp (prefers xcrun on macOS, falls back to PATH)
+      local function get_sourcekit_cmd()
+        local xcrun = vim.fn.exepath("xcrun")
+        if xcrun ~= "" then
+          return { xcrun, "sourcekit-lsp" }
+        end
+        local sk = vim.fn.exepath("sourcekit-lsp")
+        if sk ~= "" then return { sk } end
+      end
+
+      local sourcekit_cmd = get_sourcekit_cmd()
+      if not sourcekit_cmd then
+        vim.notify(
+          "sourcekit-lsp not found. Install Xcode Command Line Tools or via Mason (:Mason).",
+          vim.log.levels.WARN
+        )
+      else
+        vim.lsp.config("sourcekit", {
+          on_attach = on_attach,
+          capabilities = capabilities,
+          cmd = sourcekit_cmd,
+          root_dir = function(bufnr, on_dir)
+            local fname = vim.api.nvim_buf_get_name(bufnr)
+            if fname == "" then return end
+            local start = vim.fs.dirname(fname)
+            local found = vim.fs.find(function(name)
+              return name == "Package.swift" or name == ".git" or name:match("%.xcodeproj$")
+            end, { path = start, upward = true, limit = 1 })
+            if #found > 0 then
+              on_dir(vim.fs.dirname(found[1]))
+            else
+              on_dir(start)
+            end
+          end,
+        })
+      end
+
       local servers = {
         "ts_ls",
         "eslint",
@@ -297,6 +334,7 @@ return {
         "gopls",
       }
       if omnisharp_cmd then table.insert(servers, "omnisharp") end
+      if sourcekit_cmd then table.insert(servers, "sourcekit") end
       vim.lsp.enable(servers)
     end,
   },
