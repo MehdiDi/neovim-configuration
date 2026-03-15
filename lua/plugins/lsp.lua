@@ -177,7 +177,6 @@ return {
       if not fallback_flags then
         local fallback_target = vim.g.clangd_fallback_target
           or vim.env.CLANGD_FALLBACK_TARGET
-          or (query_drivers and "arm-none-eabi")
         if fallback_target and fallback_target ~= "" then
           fallback_flags = { "-target=" .. fallback_target }
           local fallback_cpu = vim.g.clangd_fallback_mcpu or vim.env.CLANGD_FALLBACK_MCPU
@@ -273,6 +272,11 @@ return {
           vim.log.levels.ERROR
         )
       else
+        -- Build cmd with all required flags (mirrors lspconfig defaults + Mason path)
+        local full_omnisharp_cmd = vim.list_extend(
+          vim.deepcopy(omnisharp_cmd),
+          { "-z", "DotNet:enablePackageRestore=false", "--encoding", "utf-8" }
+        )
         vim.lsp.config("omnisharp", {
           on_attach = function(client, bufnr)
             -- Unity / C# projects usually handle formatting via dotnet format or csharpier
@@ -281,10 +285,16 @@ return {
           end,
           capabilities = capabilities,
           root_dir = find_omnisharp_root,
-          enable_roslyn_analyzers = true,
-          enable_import_completion = true,
-          organize_imports_on_format = true,
-          cmd = omnisharp_cmd,
+          cmd = full_omnisharp_cmd,
+          settings = {
+            FormattingOptions = {
+              OrganizeImports = true,
+            },
+            RoslynExtensionsOptions = {
+              EnableAnalyzersSupport = true,
+              EnableImportCompletion = true,
+            },
+          },
         })
       end
 
