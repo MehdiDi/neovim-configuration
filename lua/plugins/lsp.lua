@@ -265,13 +265,13 @@ return {
         end
       end
 
-      local omnisharp_cmd = get_omnisharp_cmd()
-      if not omnisharp_cmd then
+      local omnisharp_cmd = vim.fn.has("mac") == 1 and get_omnisharp_cmd() or nil
+      if vim.fn.has("mac") == 1 and not omnisharp_cmd then
         vim.notify(
           "OmniSharp executable not found. Run :Mason to install omnisharp or ensure it is on PATH.",
           vim.log.levels.ERROR
         )
-      else
+      elseif omnisharp_cmd then
         -- Build cmd with all required flags (mirrors lspconfig defaults + Mason path)
         local full_omnisharp_cmd = vim.list_extend(
           vim.deepcopy(omnisharp_cmd),
@@ -308,8 +308,8 @@ return {
         if sk ~= "" then return { sk } end
       end
 
-      local sourcekit_cmd = get_sourcekit_cmd()
-      if not sourcekit_cmd then
+      local sourcekit_cmd = vim.fn.has("mac") == 1 and get_sourcekit_cmd() or nil
+      if vim.fn.has("mac") == 1 and not sourcekit_cmd then
         vim.notify(
           "sourcekit-lsp not found. Install Xcode Command Line Tools or via Mason (:Mason).",
           vim.log.levels.WARN
